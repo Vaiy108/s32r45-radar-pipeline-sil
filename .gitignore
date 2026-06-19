@@ -1,0 +1,39 @@
+# --- MATLAB / Simulink Artifacts ---
+*.asv
+*.slxc
+*.mex*
+slprj/
+sfprj/
+*_ert_rtw/
+DerivedCode/
+*.log
+*.mat
+*.p
+*.mlappdata
+*.cache
+
+# --- Python Artifacts ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# --- Embedded C / Build Artifacts ---
+*.o
+*.obj
+*.exe
+*.out
+*.bin
+*.elf
+build/
+dist/
+
+# --- System / IDE Files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
