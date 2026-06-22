@@ -11,6 +11,7 @@ DerivedCode/
 *.p
 *.mlappdata
 *.cache
+*.slx.original
 
 # --- Python Artifacts ---
 __pycache__/
