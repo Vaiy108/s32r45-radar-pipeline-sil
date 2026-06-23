@@ -18,7 +18,7 @@ def generate_radar_cube():
 
     # 2. Generate Synthetic FMCW ADC Beat Signals
     # Initialize an empty array for our 2D Radar Frame Data Cube
-    raw_cube = np.zeros((num_samples, num_chirps), dtype=np.complex64)
+    raw_cube_raw = np.zeros((num_chirps, num_samples), dtype=np.complex64)
     
     for chirp_idx in range(num_chirps):
         # Fast-time time vector for a single chirp
@@ -31,17 +31,24 @@ def generate_radar_cube():
         
         # Inject white Gaussian noise to make it realistic for signal processing
         noise = (np.random.normal(0, 0.2, num_samples) + 1j * np.random.normal(0, 0.2, num_samples))
-        raw_cube[:, chirp_idx] = signal + noise
+        raw_cube_raw[chirp_idx, :] = signal + noise
+    # Transpose the raw cube here so Python dimensions match your C layout [128 samples x 64 chirps]
+    raw_cube = raw_cube_raw.T
 
     # 3. Process 2D FFT Gold Model (The Mathematical Reference)
     # Range Processing (Fast-Time Windowing + 1D FFT along rows)
     # Hanning window -> reduces spectral leakage from high-power targets
     window = np.hanning(num_samples)[:, np.newaxis]
     windowed_data = raw_cube * window
-    range_fft = np.fft.fft(windowed_data, axis=0)
+    # range_fft = np.fft.fft(windowed_data, axis=0)
+    # Too match scaling behavior of the hardware - divide by number of samples
+    range_fft = np.fft.fft(windowed_data, axis=0) / num_samples  # Added 1/128 scaling 
     
     # Doppler Processing (Slow-Time 1D FFT along columns)
-    range_doppler = np.fft.fft(range_fft, axis=1)
+    range_doppler_raw = np.fft.fft(range_fft, axis=1)
+    
+    # Transpose the final matrix to align Python's memory layout with your C logic
+    range_doppler = range_doppler_raw.T
 
     # 4. Prepare Export Directories
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
