@@ -48,13 +48,13 @@ The repository's commit history follows a step-by-step engineering timeline, ill
 #### Image showing top-layer simulink model
 
 <p align="center">
-<img src="data/simulink_model_validation.PNG" width="500"/> 
+<img src="data/simulink_model_validation.png" width="500"/> 
 </p>
 
 #### Image showing S32R45_SPT_Accelerator block
 
 <p align="center">
-<img src="data/s32r45_spt_acc.PNG" width="500"/> 
+<img src="data/s32r45_spt_acc.png" width="500"/> 
 </p>
 
 
@@ -72,7 +72,7 @@ A major highlight of this portfolio is the cross-language optimization phase, sh
 ### Phase 1: Quantization & Domain Divergence (Commit 4)
 
 <p align="center">
-<img src="data/verif_failed.PNG" width="400"/> 
+<img src="data/verif_failed.png" width="400"/> 
 </p>
 
 * **Root Cause Analysis**: While the Python Gold model computed unconstrained high-precision floats, the Simulink fixed-point register conversions clipped peak signal elements to emulate true hardware limits. The difference in underlying math domains introduced absolute gain drift and quantization clipping, resulting in verification failures when evaluated raw.
