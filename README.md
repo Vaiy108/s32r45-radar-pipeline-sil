@@ -45,18 +45,6 @@ The repository's commit history follows a step-by-step engineering timeline, ill
 * **Implementation**: Models the specific physical execution constraints of the **NXP Signal Processing Toolbox (SPT 3.1)** hardware accelerator engine. Incoming data is dynamically quantized into a strict **16-bit signed fixed-point format (`sfix16_en14`)**. 
 * **Hardware Saturation**: Internal block properties implement strict overflow saturation ceilings (`+32767` to `-32768`) to mirror safe, real-world embedded processor behaviors and block arithmetic wrap-around noise spikes.
 
-#### Image showing top-layer simulink model
-
-<p align="center">
-<img src="data/simulink_model_validation.png" width="500"/> 
-</p>
-
-#### Image showing S32R45_SPT_Accelerator block
-
-<p align="center">
-<img src="data/s32r45_spt_acc.png" width="500"/> 
-</p>
-
 
 
 ### 3. Handwritten, Safety-Critical Embedded C Core (Commit 3)
@@ -117,11 +105,24 @@ s32r45-radar-pipeline-sil/
 ## Architectural Visualizations
 
 ### Model-Based Design Pipeline (Simulink Workspace Canvas)
-![Simulink Model Canvas Layout](./simulink_model/data/simulink_model.png)
+#### Image showing top-layer simulink model
+
+<p align="center">
+<img src="data/simulink_model_validation.png" width="500"/> 
+</p>
+
+#### Image showing S32R45_SPT_Accelerator block
+
+<p align="center">
+<img src="data/s32r45_spt_acc.png" width="500"/> 
+</p>
+
 *Data Flow: Ingestion ➔ 16-bit Fixed-Point SPT Accelerator Engine ➔ DMA Single Float Casting ➔ Row-Major Embedded C Execution Loops.*
 
 ### Automated Benchmarking Report Terminal Output
-![Validation Telemetry Output](./simulink_model/data/validation_success.png)
+<p align="center">
+<img src="data/verif_passed.png" width="400"/> 
+</p>
 *Framework programmatically loads inputs, builds custom source files through local MinGW compilers via SIL-alternative wrappers, and passes matrix verification comparisons.*
 
 ---
@@ -135,3 +136,23 @@ s32r45-radar-pipeline-sil/
    ```matlab
    run('verification/validate_pipeline.m')
    ```
+
+## Author
+**Vasan Iyer**   
+Embedded systems Engineer
+
+Areas of interest:
+- Autonomous Systems
+- Radars
+- Digital Signal Processing
+- FPGA Signal Processing
+- Embedded C firmware
+- STM32 microcontrollers
+- Radar Tracking
+- Sensor Fusion
+- Real-time embedded systems
+- Communication interfaces (CAN, SPI, UART)
+- FPGA-based hardware interfacing
+- Embedded debugging and system integration
+
+GitHub: https://github.com/Vaiy108
