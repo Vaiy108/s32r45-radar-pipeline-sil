@@ -108,20 +108,20 @@ s32r45-radar-pipeline-sil/
 #### Image showing top-layer simulink model
 
 <p align="center">
-<img src="data/simulink_model_validation.png" width="500"/> 
+<img src="data/simulink_model_validation.png" width="700"/> 
 </p>
 
 #### Image showing S32R45_SPT_Accelerator block
 
 <p align="center">
-<img src="data/s32r45_spt_acc.png" width="500"/> 
+<img src="data/s32r45_spt_acc.png" width="700"/> 
 </p>
 
 *Data Flow: Ingestion ➔ 16-bit Fixed-Point SPT Accelerator Engine ➔ DMA Single Float Casting ➔ Row-Major Embedded C Execution Loops.*
 
 ### Automated Benchmarking Report Terminal Output
 <p align="center">
-<img src="data/verif_passed.png" width="400"/> 
+<img src="data/verif_passed.png" width="600"/> 
 </p>
 *Framework programmatically loads inputs, builds custom source files through local MinGW compilers via SIL-alternative wrappers, and passes matrix verification comparisons.*
 
