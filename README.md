@@ -1,4 +1,4 @@
-# S32R45 Radar DSP Pipeline — Software-in-the-Loop Validation
+# S32R45-Inspired Radar DSP Pipeline Software-in-the-Loop Validation Framework
 
 A Range-Doppler processing pipeline built in three layers — Python float64
 reference, Simulink fixed-point behavioral model, and handwritten embedded C —
