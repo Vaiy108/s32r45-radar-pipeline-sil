@@ -36,4 +36,37 @@ void process_doppler_frame(const float* in_real, const float* in_imag,
             out_imag[out_idx] = sum_imag;
         }
     }
+    /* CFAR BLOCK: Real-time thresholding */
+
+    int T_R = 4, T_C = 2, G_R = 2, G_C = 1;
+    float alpha = 5.0f;
+    int num_train = (2*T_R + 2*G_R + 1) * (2*T_C + 2*G_C + 1) - (2*G_R + 1) * (2*G_C + 1);
+
+    for (int r = T_R + G_R; r < NUM_SAMPLES - (T_R + G_R); r++) {
+        for (int c = T_C + G_C; c < NUM_CHIRPS - (T_C + G_C); c++) {
+            float noise_sum = 0.0f;
+
+            /* Slide 2D window over local SRAM cells */
+            for (int wr = -T_R - G_R; wr <= T_R + G_R; wr++) {
+                for (int wc = -T_C - G_C; wc <= T_C + G_C; wc++) {
+                    /* To Check if inside guard cell exclusion window zone */
+                    if (abs(wr) <= G_R && abs(wc) <= G_C) {
+                        continue; 
+                    }
+                    int n_idx = (r + wr) * NUM_CHIRPS + (c + wc);
+                    noise_sum += sqrtf(out_real[n_idx]*out_real[n_idx] + out_imag[n_idx]*out_imag[n_idx]);
+                }
+            }
+
+            float noise_floor = noise_sum / num_train;
+            int cut_idx = r * NUM_CHIRPS + c;
+            float cut_mag = sqrtf(out_real[cut_idx]*out_real[cut_idx] + out_imag[cut_idx]*out_imag[cut_idx]);
+
+            /* If cell under test crosses threshold, amplify it. If noise, suppress to zero. */
+            if (cut_mag <= (alpha * noise_floor)) {
+                out_real[cut_idx] = 0.0f;
+                out_imag[cut_idx] = 0.0f;
+            }
+        }
+    }
 }

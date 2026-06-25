@@ -50,11 +50,36 @@ def generate_radar_cube():
     # Transpose the final matrix to align Python's memory layout with your C logic
     range_doppler = range_doppler_raw.T
 
-    # 4. Prepare Export Directories
+    # 4. 2D CA-CFAR (Cell Averaging Constant False Alarm Rate)
+    # Define training grid dimensions to calculate a dynamic noise threshold
+    T_R, T_C = 4, 2  # Training cells (Range, Doppler)
+    G_R, G_C = 2, 1  # Guard cells (Range, Doppler)
+    alpha = 5.0      # Threshold scaling multiplier (SNR scaling factor)
+    
+    rd_abs = np.abs(range_doppler)
+    cfar_mask = np.zeros_like(rd_abs, dtype=np.float32)
+    num_train = (2*T_R + 2*G_R + 1) * (2*T_C + 2*G_C + 1) - (2*G_R + 1) * (2*G_C + 1)
+
+    for r in range(T_R + G_R, num_samples - (T_R + G_R)):
+        for c in range(T_C + G_C, num_chirps - (T_C + G_C)):
+            # Slice full window and isolate guard zone around Cell Under Test (CUT)
+            full_win = rd_abs[r-(T_R+G_R):r+(T_R+G_R)+1, c-(T_C+G_C):c+(T_C+G_C)+1]
+            guard_win = rd_abs[r-G_R:r+G_R+1, c-G_C:c+G_C+1]
+            
+            # Sum up noise while omitting target bleed energy
+            noise_sum = np.sum(full_win) - np.sum(guard_win)
+            noise_floor = noise_sum / num_train
+            threshold = alpha * noise_floor
+            
+            if rd_abs[r, c] > threshold:
+                cfar_mask[r, c] = 1.0
+
+
+    # 5. Prepare Export Directories
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
     os.makedirs(data_dir, exist_ok=True)
 
-    # 5. Export Data Matrices -> for Simulink Injection & Verification
+    # 6. Export Data Matrices -> for Simulink Injection & Verification
     # Conversion to real and imaginary splits -> since Simulink/C handles fixed-point arrays cleanly this way
     sio.savemat(os.path.join(data_dir, 'radar_input.mat'), {
         'raw_cube_real': np.real(raw_cube).astype(np.float32),
@@ -63,10 +88,11 @@ def generate_radar_cube():
     
     sio.savemat(os.path.join(data_dir, 'python_gold.mat'), {
         'range_doppler_real': np.real(range_doppler).astype(np.float32),
-        'range_doppler_imag': np.imag(range_doppler).astype(np.float32)
+        'range_doppler_imag': np.imag(range_doppler).astype(np.float32),
+        'cfar_mask': cfar_mask
     })
     
-    print("[Python] Gold Model generation complete. Matrices exported to 'python_prototype/data/'.")
+    print("[Python] Gold Model generated and Matrices exported to 'python_prototype/data/'.")
 
 if __name__ == "__main__":
     generate_radar_cube()
